@@ -1,0 +1,317 @@
+import { useState } from 'react';
+import type { Level, ThemeData, WordData } from '../data/types';
+import { playSound } from '../utils/sound';
+
+interface Props {
+  theme: ThemeData;
+  level: Level;
+  onStartQuiz: () => void;
+  onBack: () => void;
+}
+
+function getExample(word: WordData, level: Level): string {
+  if (level === 'children' || level === 'beginner') return word.exampleBeginner;
+  if (level === 'intermediate') return word.exampleIntermediate;
+  return word.exampleAdvanced;
+}
+
+const animClass: Record<string, string> = {
+  heartbeat: 'anim-heartbeat',
+  spin: 'anim-spin',
+  twinkle: 'anim-twinkle',
+  creep: 'anim-creep',
+  wobble: 'anim-wobble',
+  bounce: 'anim-bounce',
+  drip: 'anim-drip',
+  flash: 'anim-flash',
+  roll: 'anim-roll',
+  shake: 'anim-pulse',
+  pulse: 'anim-pulse',
+};
+
+export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
+  const [index, setIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const word = theme.words[index];
+  const total = theme.words.length;
+
+  const handleSound = () => {
+    setIsPlaying(true);
+    playSound(word.soundType);
+    setTimeout(() => setIsPlaying(false), 600);
+  };
+
+  const handlePrev = () => setIndex((i) => Math.max(0, i - 1));
+  const handleNext = () => setIndex((i) => Math.min(total - 1, i + 1));
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20, gap: 12 }}>
+        <button
+          onClick={onBack}
+          style={{
+            background: 'rgba(255,255,255,0.8)',
+            border: 'none',
+            borderRadius: 16,
+            width: 44,
+            height: 44,
+            fontSize: 20,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            flexShrink: 0,
+          }}
+        >
+          ←
+        </button>
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <span style={{
+            fontSize: 18,
+            fontWeight: 900,
+            color: 'var(--text-dark)',
+            fontFamily: "'Jua', sans-serif",
+          }}>
+            {theme.emoji} {theme.title}
+          </span>
+        </div>
+        <div style={{
+          background: 'rgba(255,255,255,0.8)',
+          borderRadius: 16,
+          padding: '8px 14px',
+          fontSize: 15,
+          fontWeight: 800,
+          color: 'var(--text-soft)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+        }}>
+          {index + 1}/{total}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{
+        height: 8,
+        background: 'rgba(255,255,255,0.6)',
+        borderRadius: 8,
+        marginBottom: 24,
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          height: '100%',
+          background: 'linear-gradient(90deg, #B8F0E6, #B8D4FF)',
+          borderRadius: 8,
+          width: `${((index + 1) / total) * 100}%`,
+          transition: 'width 0.3s ease',
+        }} />
+      </div>
+
+      {/* Main Card */}
+      <div style={{
+        background: 'rgba(255,255,255,0.85)',
+        borderRadius: 28,
+        padding: '32px 28px',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 20,
+        backdropFilter: 'blur(8px)',
+      }}>
+        {/* Animated emoji */}
+        <div
+          className={animClass[word.animationType] ?? 'anim-pulse'}
+          style={{ fontSize: 72, lineHeight: 1, cursor: 'pointer', userSelect: 'none' }}
+          onClick={handleSound}
+        >
+          {word.emoji}
+        </div>
+
+        {/* Word */}
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: 52,
+            fontWeight: 900,
+            color: 'var(--text-dark)',
+            margin: 0,
+            fontFamily: "'Jua', 'Nunito', sans-serif",
+            letterSpacing: 2,
+          }}>
+            {word.word}
+          </h2>
+
+          {level !== 'advanced' && (
+            <p style={{
+              fontSize: 20,
+              color: 'var(--text-soft)',
+              fontWeight: 700,
+              margin: '8px 0 0',
+              fontStyle: 'italic',
+            }}>
+              {word.english}
+            </p>
+          )}
+        </div>
+
+        {/* Definition */}
+        <div style={{
+          background: 'linear-gradient(135deg, #FFD6E8 0%, #FFF5B8 100%)',
+          borderRadius: 18,
+          padding: '14px 20px',
+          width: '100%',
+          textAlign: 'center',
+        }}>
+          <p style={{
+            fontSize: 18,
+            color: 'var(--text-dark)',
+            fontWeight: 700,
+            margin: 0,
+          }}>
+            {word.definition}
+          </p>
+        </div>
+
+        {/* Example */}
+        {level !== 'children' && (
+          <div style={{
+            background: 'linear-gradient(135deg, #C8EEFF 0%, #B8D4FF 100%)',
+            borderRadius: 18,
+            padding: '14px 20px',
+            width: '100%',
+          }}>
+            <p style={{
+              fontSize: 13,
+              color: 'var(--text-soft)',
+              fontWeight: 700,
+              margin: '0 0 6px',
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}>
+              예문
+            </p>
+            <p style={{
+              fontSize: 17,
+              color: 'var(--text-dark)',
+              fontWeight: 600,
+              margin: 0,
+              lineHeight: 1.6,
+            }}>
+              {getExample(word, level).replace(word.word, `✦ ${word.word} ✦`)}
+            </p>
+          </div>
+        )}
+
+        {/* Sound Button */}
+        <button
+          onClick={handleSound}
+          className={isPlaying ? 'anim-bounce' : ''}
+          style={{
+            background: isPlaying
+              ? 'linear-gradient(135deg, #B8F0E6, #B8D4FF)'
+              : 'linear-gradient(135deg, #FFD6E8, #B8D4FF)',
+            border: 'none',
+            borderRadius: 20,
+            padding: '14px 28px',
+            fontSize: 18,
+            fontWeight: 800,
+            color: 'var(--text-dark)',
+            cursor: 'pointer',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
+            transition: 'transform 0.15s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <span style={{ fontSize: 22 }}>{isPlaying ? '🎵' : '🔊'}</span>
+          소리 듣기
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+        <button
+          onClick={handlePrev}
+          disabled={index === 0}
+          style={{
+            flex: 1,
+            background: index === 0 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.85)',
+            border: 'none',
+            borderRadius: 18,
+            padding: '16px',
+            fontSize: 18,
+            fontWeight: 800,
+            color: index === 0 ? 'var(--text-soft)' : 'var(--text-dark)',
+            cursor: index === 0 ? 'not-allowed' : 'pointer',
+            boxShadow: index === 0 ? 'none' : '0 6px 16px rgba(0,0,0,0.08)',
+            transition: 'transform 0.15s',
+          }}
+        >
+          ← 이전
+        </button>
+
+        {index === total - 1 ? (
+          <button
+            onClick={onStartQuiz}
+            style={{
+              flex: 2,
+              background: 'linear-gradient(135deg, #B8F0E6 0%, #B8D4FF 100%)',
+              border: 'none',
+              borderRadius: 18,
+              padding: '16px',
+              fontSize: 18,
+              fontWeight: 900,
+              color: 'var(--text-dark)',
+              cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.12)',
+              fontFamily: "'Jua', sans-serif",
+              transition: 'transform 0.15s',
+            }}
+          >
+            퀴즈 시작 🎯
+          </button>
+        ) : (
+          <button
+            onClick={handleNext}
+            style={{
+              flex: 1,
+              background: 'rgba(255,255,255,0.85)',
+              border: 'none',
+              borderRadius: 18,
+              padding: '16px',
+              fontSize: 18,
+              fontWeight: 800,
+              color: 'var(--text-dark)',
+              cursor: 'pointer',
+              boxShadow: '0 6px 16px rgba(0,0,0,0.08)',
+              transition: 'transform 0.15s',
+            }}
+          >
+            다음 →
+          </button>
+        )}
+      </div>
+
+      {/* Quiz shortcut */}
+      {index < total - 1 && (
+        <button
+          onClick={onStartQuiz}
+          style={{
+            background: 'none',
+            border: 'none',
+            marginTop: 12,
+            fontSize: 15,
+            color: 'var(--text-soft)',
+            cursor: 'pointer',
+            fontWeight: 700,
+            textDecoration: 'underline',
+          }}
+        >
+          바로 퀴즈 풀기 →
+        </button>
+      )}
+    </div>
+  );
+}

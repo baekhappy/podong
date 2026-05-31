@@ -1,111 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Jua&display=swap');
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --white: #FFFFFF;
+  --mint: #B8F0E6;
+  --pink: #FFD6E8;
+  --cobalt: #B8D4FF;
+  --lemon: #FFF5B8;
+  --sky: #C8EEFF;
+  --text-dark: #3D3D3D;
+  --text-soft: #7A7A9A;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
-  margin: 0;
+  font-family: 'Nunito', 'Jua', -apple-system, sans-serif;
+  background: linear-gradient(135deg, #FFD6E8 0%, #C8EEFF 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+/* ── Animations ── */
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.4); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.25); }
+  60% { transform: scale(1); }
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+  33%       { opacity: 0.55; transform: scale(0.9); filter: brightness(0.8); }
+  66%       { opacity: 1; transform: scale(1.2); filter: brightness(1.6); }
 }
+
+@keyframes creep {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(10px); }
+  50%  { transform: translateX(18px); }
+  75%  { transform: translateX(8px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-16deg); }
+  40% { transform: rotate(16deg); }
+  60% { transform: rotate(-10deg); }
+  80% { transform: rotate(10deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-22px); }
+}
+
+@keyframes drip {
+  0%   { transform: translateY(-10px); opacity: 0.4; }
+  55%  { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0.3; }
+}
+
+@keyframes flash {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50%       { filter: brightness(2.2) saturate(2); }
+}
+
+@keyframes roll {
+  0%   { transform: rotate(-360deg) translateX(-12px); }
+  100% { transform: rotate(360deg) translateX(12px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.09); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-10px); }
+  40%       { transform: translateX(10px); }
+  60%       { transform: translateX(-6px); }
+  80%       { transform: translateX(6px); }
+}
+
+.anim-heartbeat { animation: heartbeat 0.9s ease-in-out infinite; }
+.anim-spin      { animation: spin 2s linear infinite; }
+.anim-twinkle   { animation: twinkle 1.6s ease-in-out infinite; }
+.anim-creep     { animation: creep 2.2s ease-in-out infinite; }
+.anim-wobble    { animation: wobble 0.9s ease-in-out infinite; }
+.anim-bounce    { animation: bounce 0.65s ease-in-out infinite; }
+.anim-drip      { animation: drip 1.1s ease-in-out infinite; }
+.anim-flash     { animation: flash 0.85s ease-in-out infinite; }
+.anim-roll      { animation: roll 1.6s ease-in-out infinite alternate; }
+.anim-pulse     { animation: pulse 1.6s ease-in-out infinite; }
+.anim-shake     { animation: shake 0.5s ease-in-out; }
+
+/* ── Interactive button hover effects ── */
+
+.level-card-btn:hover,
+.theme-card-btn:hover,
+.option-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.13) !important;
+}
+
+.level-card-btn:active,
+.theme-card-btn:active,
+.option-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Scrollbar ── */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 6px; }
+
+/* ── Mobile tap highlight removal ── */
+button { -webkit-tap-highlight-color: transparent; }
