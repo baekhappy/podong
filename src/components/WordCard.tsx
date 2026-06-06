@@ -29,26 +29,12 @@ const animClass: Record<string, string> = {
   pulse: 'anim-pulse',
 };
 
-async function speakText(text: string) {
-  try {
-    const res = await fetch('/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, rate: 0.8 }),
-    });
-    if (!res.ok) throw new Error('TTS 실패');
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.play();
-  } catch {
-    // fallback: Web Speech API
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ko-KR';
-    u.rate = 0.8;
-    window.speechSynthesis.speak(u);
-  }
+function speakText(text: string) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.8;
+  window.speechSynthesis.speak(u);
 }
 
 export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
