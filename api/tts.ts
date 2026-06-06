@@ -1,37 +1,16 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export async function handleTTS(req: IncomingMessage, res: ServerResponse): Promise<void> {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
-    res.writeHead(405, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Method not allowed' }));
-    return;
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'OPENAI_API_KEY not set' }));
-    return;
+    return res.status(500).json({ error: 'OPENAI_API_KEY not set' });
   }
 
-  const body = await new Promise<string>((resolve, reject) => {
-    let data = '';
-    req.on('data', (chunk: Buffer) => { data += chunk.toString(); });
-    req.on('end', () => resolve(data));
-    req.on('error', reject);
-  });
-
-  let text: string;
-  let level: string;
-  try {
-    const parsed = JSON.parse(body) as { text: string; level: string };
-    text = parsed.text;
-    level = parsed.level;
-  } catch {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Invalid JSON body' }));
-    return;
-  }
+  const { text, level } = req.body as { text: string; level: string };
 
   const speedMap: Record<string, number> = {
     children: 0.7,
@@ -58,15 +37,10 @@ export async function handleTTS(req: IncomingMessage, res: ServerResponse): Prom
 
   if (!response.ok) {
     const errText = await response.text();
-    res.writeHead(response.status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: errText }));
-    return;
+    return res.status(response.status).json({ error: errText });
   }
 
   const audioBuffer = await response.arrayBuffer();
-  res.writeHead(200, {
-    'Content-Type': 'audio/mpeg',
-    'Content-Length': audioBuffer.byteLength.toString(),
-  });
-  res.end(Buffer.from(audioBuffer));
+  res.setHeader('Content-Type', 'audio/mpeg');
+  res.send(Buffer.from(audioBuffer));
 }
