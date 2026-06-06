@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Level, ThemeData, WordData } from '../data/types';
 import { playSound } from '../utils/sound';
+
 
 interface Props {
   theme: ThemeData;
@@ -32,6 +33,10 @@ const animClass: Record<string, string> = {
 export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSpeakingWord, setIsSpeakingWord] = useState(false);
+  const [isSpeakingExample, setIsSpeakingExample] = useState(false);
+  const wordAudioRef = useRef<HTMLAudioElement | null>(null);
+  const exampleAudioRef = useRef<HTMLAudioElement | null>(null);
   const word = theme.words[index];
   const total = theme.words.length;
 
@@ -43,6 +48,61 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
 
   const handlePrev = () => setIndex((i) => Math.max(0, i - 1));
   const handleNext = () => setIndex((i) => Math.min(total - 1, i + 1));
+
+  const handleSpeakWord = async () => {
+    if (isSpeakingWord) {
+      wordAudioRef.current?.pause();
+      wordAudioRef.current = null;
+      setIsSpeakingWord(false);
+      return;
+    }
+    setIsSpeakingWord(true);
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: word.word, level }),
+      });
+      if (!response.ok) throw new Error('TTS 실패');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      wordAudioRef.current = audio;
+      audio.onended = () => { URL.revokeObjectURL(url); setIsSpeakingWord(false); wordAudioRef.current = null; };
+      audio.onerror = () => { URL.revokeObjectURL(url); setIsSpeakingWord(false); wordAudioRef.current = null; };
+      await audio.play();
+    } catch {
+      setIsSpeakingWord(false);
+    }
+  };
+
+  const handleSpeakExample = async () => {
+    if (isSpeakingExample) {
+      exampleAudioRef.current?.pause();
+      exampleAudioRef.current = null;
+      setIsSpeakingExample(false);
+      return;
+    }
+    setIsSpeakingExample(true);
+    try {
+      const exampleText = getExample(word, level);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: exampleText, level }),
+      });
+      if (!response.ok) throw new Error('TTS 실패');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      exampleAudioRef.current = audio;
+      audio.onended = () => { URL.revokeObjectURL(url); setIsSpeakingExample(false); exampleAudioRef.current = null; };
+      audio.onerror = () => { URL.revokeObjectURL(url); setIsSpeakingExample(false); exampleAudioRef.current = null; };
+      await audio.play();
+    } catch {
+      setIsSpeakingExample(false);
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
@@ -131,16 +191,42 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
 
         {/* Word */}
         <div style={{ textAlign: 'center' }}>
-          <h2 style={{
-            fontSize: 52,
-            fontWeight: 900,
-            color: 'var(--text-dark)',
-            margin: 0,
-            fontFamily: "'Jua', 'Nunito', sans-serif",
-            letterSpacing: 2,
-          }}>
-            {word.word}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <h2 style={{
+              fontSize: 52,
+              fontWeight: 900,
+              color: 'var(--text-dark)',
+              margin: 0,
+              fontFamily: "'Jua', 'Nunito', sans-serif",
+              letterSpacing: 2,
+            }}>
+              {word.word}
+            </h2>
+            <button
+              onClick={handleSpeakWord}
+              className={isSpeakingWord ? 'anim-pulse' : ''}
+              title={isSpeakingWord ? '정지' : '단어 발음 듣기'}
+              style={{
+                background: isSpeakingWord
+                  ? 'linear-gradient(135deg, #B8F0E6, #B8D4FF)'
+                  : 'rgba(255,255,255,0.8)',
+                border: 'none',
+                borderRadius: 12,
+                width: 36,
+                height: 36,
+                fontSize: 18,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                flexShrink: 0,
+                transition: 'background 0.2s',
+              }}
+            >
+              🔊
+            </button>
+          </div>
 
           {level !== 'advanced' && (
             <p style={{
@@ -181,16 +267,42 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
             padding: '14px 20px',
             width: '100%',
           }}>
-            <p style={{
-              fontSize: 13,
-              color: 'var(--text-soft)',
-              fontWeight: 700,
-              margin: '0 0 6px',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}>
-              예문
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <p style={{
+                fontSize: 13,
+                color: 'var(--text-soft)',
+                fontWeight: 700,
+                margin: 0,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+              }}>
+                예문
+              </p>
+              <button
+                onClick={handleSpeakExample}
+                className={isSpeakingExample ? 'anim-pulse' : ''}
+                title={isSpeakingExample ? '정지' : '예문 발음 듣기'}
+                style={{
+                  background: isSpeakingExample
+                    ? 'linear-gradient(135deg, #B8F0E6, #B8D4FF)'
+                    : 'rgba(255,255,255,0.6)',
+                  border: 'none',
+                  borderRadius: 10,
+                  width: 30,
+                  height: 30,
+                  fontSize: 15,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                  flexShrink: 0,
+                  transition: 'background 0.2s',
+                }}
+              >
+                🔊
+              </button>
+            </div>
             <p style={{
               fontSize: 17,
               color: 'var(--text-dark)',
