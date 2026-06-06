@@ -1,7 +1,5 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import type { Level, ThemeData, WordData } from '../data/types';
-import { speakText } from '../api';
-
 
 interface Props {
   theme: ThemeData;
@@ -30,73 +28,21 @@ const animClass: Record<string, string> = {
   pulse: 'anim-pulse',
 };
 
+function speak(text: string) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.8;
+  window.speechSynthesis.speak(u);
+}
+
 export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
   const [index, setIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isSpeakingWord, setIsSpeakingWord] = useState(false);
-  const [isSpeakingExample, setIsSpeakingExample] = useState(false);
-  const wordAudioRef = useRef<HTMLAudioElement | null>(null);
-  const exampleAudioRef = useRef<HTMLAudioElement | null>(null);
   const word = theme.words[index];
   const total = theme.words.length;
 
   const handlePrev = () => setIndex((i) => Math.max(0, i - 1));
   const handleNext = () => setIndex((i) => Math.min(total - 1, i + 1));
-
-  const handleSpeakWord = async () => {
-    if (isSpeakingWord) {
-      wordAudioRef.current?.pause();
-      wordAudioRef.current = null;
-      setIsSpeakingWord(false);
-      return;
-    }
-    setIsSpeakingWord(true);
-    try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: word.word, level }),
-      });
-      if (!response.ok) throw new Error('TTS 실패');
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      wordAudioRef.current = audio;
-      audio.onended = () => { URL.revokeObjectURL(url); setIsSpeakingWord(false); wordAudioRef.current = null; };
-      audio.onerror = () => { URL.revokeObjectURL(url); setIsSpeakingWord(false); wordAudioRef.current = null; };
-      await audio.play();
-    } catch {
-      setIsSpeakingWord(false);
-    }
-  };
-
-  const handleSpeakExample = async () => {
-    if (isSpeakingExample) {
-      exampleAudioRef.current?.pause();
-      exampleAudioRef.current = null;
-      setIsSpeakingExample(false);
-      return;
-    }
-    setIsSpeakingExample(true);
-    try {
-      const exampleText = getExample(word, level);
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: exampleText, level }),
-      });
-      if (!response.ok) throw new Error('TTS 실패');
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      exampleAudioRef.current = audio;
-      audio.onended = () => { URL.revokeObjectURL(url); setIsSpeakingExample(false); exampleAudioRef.current = null; };
-      audio.onerror = () => { URL.revokeObjectURL(url); setIsSpeakingExample(false); exampleAudioRef.current = null; };
-      await audio.play();
-    } catch {
-      setIsSpeakingExample(false);
-    }
-  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
@@ -178,7 +124,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
         <div
           className={animClass[word.animationType] ?? 'anim-pulse'}
           style={{ fontSize: 72, lineHeight: 1, cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => speakText(word.word, level)}
+          onClick={() => speak(word.word)}
         >
           {word.emoji}
         </div>
@@ -197,13 +143,10 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
               {word.word}
             </h2>
             <button
-              onClick={() => speakText(word.word, level)}
-              className={isSpeakingWord ? 'anim-pulse' : ''}
-              title={isSpeakingWord ? '정지' : '단어 발음 듣기'}
+              onClick={() => speak(word.word)}
+              title="단어 발음 듣기"
               style={{
-                background: isSpeakingWord
-                  ? 'linear-gradient(135deg, #B8F0E6, #B8D4FF)'
-                  : 'rgba(255,255,255,0.8)',
+                background: 'rgba(255,255,255,0.8)',
                 border: 'none',
                 borderRadius: 12,
                 width: 36,
@@ -273,13 +216,10 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
                 예문
               </p>
               <button
-                onClick={handleSpeakExample}
-                className={isSpeakingExample ? 'anim-pulse' : ''}
-                title={isSpeakingExample ? '정지' : '예문 발음 듣기'}
+                onClick={() => speak(getExample(word, level))}
+                title="예문 발음 듣기"
                 style={{
-                  background: isSpeakingExample
-                    ? 'linear-gradient(135deg, #B8F0E6, #B8D4FF)'
-                    : 'rgba(255,255,255,0.6)',
+                  background: 'rgba(255,255,255,0.6)',
                   border: 'none',
                   borderRadius: 10,
                   width: 30,
@@ -311,12 +251,9 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
 
         {/* Sound Button */}
         <button
-          onClick={() => speakText(word.word, level)}
-          className={isPlaying ? 'anim-bounce' : ''}
+          onClick={() => speak(word.word)}
           style={{
-            background: isPlaying
-              ? 'linear-gradient(135deg, #B8F0E6, #B8D4FF)'
-              : 'linear-gradient(135deg, #FFD6E8, #B8D4FF)',
+            background: 'linear-gradient(135deg, #FFD6E8, #B8D4FF)',
             border: 'none',
             borderRadius: 20,
             padding: '14px 28px',
@@ -331,7 +268,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
             gap: 8,
           }}
         >
-          <span style={{ fontSize: 22 }}>{isPlaying ? '🎵' : '🔊'}</span>
+          <span style={{ fontSize: 22 }}>🔊</span>
           소리 듣기
         </button>
       </div>
