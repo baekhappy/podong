@@ -138,7 +138,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
         <div
           className={animClass[word.animationType] ?? 'anim-pulse'}
           style={{ fontSize: 72, lineHeight: 1, cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => speak(word.word)}
+          onClick={() => speakText(word.word)}
         >
           {word.emoji}
         </div>
@@ -157,7 +157,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
               {word.word}
             </h2>
             <button
-              onClick={() => speak(word.word)}
+              onClick={() => speakText(word.word)}
               title="단어 발음 듣기"
               style={{
                 background: 'rgba(255,255,255,0.8)',
@@ -230,7 +230,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
                 예문
               </p>
               <button
-                onClick={() => speak(getExample(word, level))}
+                onClick={() => speakText(getExample(word, level))}
                 title="예문 발음 듣기"
                 style={{
                   background: 'rgba(255,255,255,0.6)',
@@ -265,7 +265,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
 
         {/* Sound Button */}
         <button
-          onClick={() => speak(word.word)}
+          onClick={() => speakText(word.word)}
           style={{
             background: 'linear-gradient(135deg, #FFD6E8, #B8D4FF)',
             border: 'none',
