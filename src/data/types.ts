@@ -2,6 +2,7 @@ export interface WordData {
   word: string;
   english: string;
   definition: string;
+  exampleChildren: string;
   exampleBeginner: string;
   exampleIntermediate: string;
   exampleAdvanced: string;

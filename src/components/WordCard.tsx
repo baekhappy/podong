@@ -9,7 +9,8 @@ interface Props {
 }
 
 function getExample(word: WordData, level: Level): string {
-  if (level === 'children' || level === 'beginner') return word.exampleBeginner;
+  if (level === 'children') return word.exampleChildren;
+  if (level === 'beginner') return word.exampleBeginner;
   if (level === 'intermediate') return word.exampleIntermediate;
   return word.exampleAdvanced;
 }
@@ -263,28 +264,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
           </div>
         )}
 
-        {/* Sound Button */}
-        <button
-          onClick={() => speakText(word.word)}
-          style={{
-            background: 'linear-gradient(135deg, #FFD6E8, #B8D4FF)',
-            border: 'none',
-            borderRadius: 20,
-            padding: '14px 28px',
-            fontSize: 18,
-            fontWeight: 800,
-            color: 'var(--text-dark)',
-            cursor: 'pointer',
-            boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
-            transition: 'transform 0.15s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
-        >
-          <span style={{ fontSize: 22 }}>🔊</span>
-          소리 듣기
-        </button>
+
       </div>
 
       {/* Navigation */}
