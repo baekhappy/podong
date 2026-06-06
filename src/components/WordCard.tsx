@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { Level, ThemeData, WordData } from '../data/types';
-import { playSound } from '../utils/sound';
+import { speakText } from '../api';
 
 
 interface Props {
@@ -39,12 +39,6 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
   const exampleAudioRef = useRef<HTMLAudioElement | null>(null);
   const word = theme.words[index];
   const total = theme.words.length;
-
-  const handleSound = () => {
-    setIsPlaying(true);
-    playSound(word.soundType);
-    setTimeout(() => setIsPlaying(false), 600);
-  };
 
   const handlePrev = () => setIndex((i) => Math.max(0, i - 1));
   const handleNext = () => setIndex((i) => Math.min(total - 1, i + 1));
@@ -184,7 +178,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
         <div
           className={animClass[word.animationType] ?? 'anim-pulse'}
           style={{ fontSize: 72, lineHeight: 1, cursor: 'pointer', userSelect: 'none' }}
-          onClick={handleSound}
+          onClick={() => speakText(word.word, level)}
         >
           {word.emoji}
         </div>
@@ -203,7 +197,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
               {word.word}
             </h2>
             <button
-              onClick={handleSpeakWord}
+              onClick={() => speakText(word.word, level)}
               className={isSpeakingWord ? 'anim-pulse' : ''}
               title={isSpeakingWord ? '정지' : '단어 발음 듣기'}
               style={{
@@ -317,7 +311,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
 
         {/* Sound Button */}
         <button
-          onClick={handleSound}
+          onClick={() => speakText(word.word, level)}
           className={isPlaying ? 'anim-bounce' : ''}
           style={{
             background: isPlaying
