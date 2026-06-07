@@ -198,7 +198,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
         </div>
 
         {/* Example */}
-        {level !== 'children' && (
+        {(
           <div style={{
             background: 'linear-gradient(135deg, #C8EEFF 0%, #B8D4FF 100%)',
             borderRadius: 18,
