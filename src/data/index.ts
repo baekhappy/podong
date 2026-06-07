@@ -7,6 +7,7 @@ import 빛모양Words from './빛모양';
 import 음식먹기Words from './음식먹기';
 import 상태느낌Words from './상태느낌';
 import 소리충격Words from './소리충격';
+import 행동 from './행동';
 
 export const themes: ThemeData[] = [
   {
@@ -57,6 +58,7 @@ export const themes: ThemeData[] = [
     emoji: '💥',
     words: 소리충격Words,
   },
+  행동,
 ];
 
 export type { ThemeData, WordData, Level, Screen } from './types';
