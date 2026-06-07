@@ -24,6 +24,7 @@ const levelColors: Record<Level, string> = {
 const themeColors = [
   '#FFD6E8', '#B8F0E6', '#B8D4FF', '#FFF5B8',
   '#C8EEFF', '#FFD6E8', '#B8F0E6', '#FFF5B8',
+  '#D4B8FF',
 ];
 
 export default function ThemeSelect({ level, onSelect, onBack }: Props) {
