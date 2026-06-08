@@ -5,6 +5,7 @@ interface Props {
   level: Level;
   onSelect: (theme: ThemeData) => void;
   onBack: () => void;
+  completedThemes?: string[];
 }
 
 const levelLabels: Record<Level, string> = {
@@ -27,7 +28,7 @@ const themeColors = [
   '#D4B8FF',
 ];
 
-export default function ThemeSelect({ level, onSelect, onBack }: Props) {
+export default function ThemeSelect({ level, onSelect, onBack, completedThemes = [] }: Props) {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
       {/* Header */}
@@ -93,49 +94,61 @@ export default function ThemeSelect({ level, onSelect, onBack }: Props) {
         gap: 16,
         flex: 1,
       }}>
-        {themes.map((theme, i) => (
-          <button
-            key={theme.id}
-            onClick={() => onSelect(theme)}
-            className="theme-card-btn"
-            style={{
-              background: `linear-gradient(135deg, ${themeColors[i]} 0%, #FFFFFF 100%)`,
-              border: 'none',
-              borderRadius: 24,
-              padding: '20px 16px',
-              cursor: 'pointer',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 8,
-              minHeight: 120,
-            }}
-          >
-            <span style={{ fontSize: 40 }}>{theme.emoji}</span>
-            <span style={{
-              fontSize: 16,
-              fontWeight: 900,
-              color: 'var(--text-dark)',
-              fontFamily: "'Jua', sans-serif",
-              lineHeight: 1.3,
-            }}>
-              {theme.title}
-            </span>
-            <span style={{
-              fontSize: 13,
-              color: 'var(--text-soft)',
-              background: 'rgba(255,255,255,0.7)',
-              borderRadius: 10,
-              padding: '2px 8px',
-              fontWeight: 700,
-            }}>
-              {theme.words.length}개 단어
-            </span>
-          </button>
-        ))}
+        {themes.map((theme, i) => {
+          const done = completedThemes.includes(theme.id);
+          return (
+            <button
+              key={theme.id}
+              onClick={() => onSelect(theme)}
+              className="theme-card-btn"
+              style={{
+                background: `linear-gradient(135deg, ${themeColors[i]} 0%, #FFFFFF 100%)`,
+                border: done ? '2px solid rgba(100,200,150,0.5)' : 'none',
+                borderRadius: 24,
+                padding: '20px 16px',
+                cursor: 'pointer',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                minHeight: 120,
+                position: 'relative',
+              }}
+            >
+              {done && (
+                <span style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 12,
+                  fontSize: 16,
+                }}>✅</span>
+              )}
+              <span style={{ fontSize: 40 }}>{theme.emoji}</span>
+              <span style={{
+                fontSize: 16,
+                fontWeight: 900,
+                color: 'var(--text-dark)',
+                fontFamily: "'Jua', sans-serif",
+                lineHeight: 1.3,
+              }}>
+                {theme.title}
+              </span>
+              <span style={{
+                fontSize: 13,
+                color: 'var(--text-soft)',
+                background: 'rgba(255,255,255,0.7)',
+                borderRadius: 10,
+                padding: '2px 8px',
+                fontWeight: 700,
+              }}>
+                {theme.words.length}개 단어
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

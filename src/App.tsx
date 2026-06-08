@@ -5,6 +5,9 @@ import ThemeSelect from './components/ThemeSelect';
 import WordCard from './components/WordCard';
 import Quiz from './components/Quiz';
 import Result from './components/Result';
+import Progress from './components/Progress';
+import { loadProgress, recordWord } from './utils/progress';
+import type { ProgressData } from './utils/progress';
 
 const levelBadge: Record<Level, string> = {
   children: '어린이 🌈',
@@ -33,6 +36,7 @@ export default function App() {
   const [level, setLevel] = useState<Level>('beginner');
   const [selectedTheme, setSelectedTheme] = useState<ThemeData | null>(null);
   const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
+  const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
 
   const handleLevelSelect = (l: Level) => {
     setLevel(l);
@@ -49,11 +53,19 @@ export default function App() {
     setScreen('result');
   };
 
-  const activeNav = screen === 'level' ? 'home' : 'theme';
+  const handleWordViewed = (themeId: string, wordText: string, isLast: boolean) => {
+    setProgress(recordWord(themeId, wordText, isLast));
+  };
+
+  const activeNav =
+    screen === 'level' ? 'home' :
+    screen === 'progress' ? 'progress' :
+    'theme';
 
   const handleNavClick = (id: string) => {
     if (id === 'home') setScreen('level');
     if (id === 'theme' && screen !== 'level') setScreen('theme');
+    if (id === 'progress') setScreen('progress');
   };
 
   return (
@@ -86,7 +98,7 @@ export default function App() {
 
         {/* Center: Level badge */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          {screen !== 'level' && (
+          {screen !== 'level' && screen !== 'progress' && (
             <span style={{
               background: levelBadgeColor[level],
               borderRadius: 20,
@@ -100,8 +112,18 @@ export default function App() {
           )}
         </div>
 
-        {/* Right: Login */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+        {/* Right: Today count + Login */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10 }}>
+          {progress.todayWords.length > 0 && (
+            <span style={{
+              fontSize: 13,
+              fontWeight: 800,
+              color: 'var(--text-soft)',
+              whiteSpace: 'nowrap',
+            }}>
+              📖 오늘 {progress.todayWords.length}단어
+            </span>
+          )}
           <button style={{
             background: 'linear-gradient(135deg, #B8D4FF, #B8F0E6)',
             border: 'none',
@@ -149,6 +171,7 @@ export default function App() {
                 level={level}
                 onSelect={handleThemeSelect}
                 onBack={() => setScreen('level')}
+                completedThemes={progress.completedThemes}
               />
             )}
             {screen === 'study' && selectedTheme && (
@@ -157,6 +180,7 @@ export default function App() {
                 level={level}
                 onStartQuiz={() => setScreen('quiz')}
                 onBack={() => setScreen('theme')}
+                onWordViewed={handleWordViewed}
               />
             )}
             {screen === 'quiz' && selectedTheme && (
@@ -176,6 +200,9 @@ export default function App() {
                 onRetry={() => setScreen('quiz')}
                 onGoHome={() => setScreen('theme')}
               />
+            )}
+            {screen === 'progress' && (
+              <Progress progress={progress} />
             )}
 
           </div>

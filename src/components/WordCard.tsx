@@ -6,6 +6,7 @@ interface Props {
   level: Level;
   onStartQuiz: () => void;
   onBack: () => void;
+  onWordViewed?: (themeId: string, wordText: string, isLast: boolean) => void;
 }
 
 function getExample(word: WordData, level: Level): string {
@@ -37,13 +38,20 @@ function speakText(text: string) {
   window.speechSynthesis.speak(u);
 }
 
-export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
+export default function WordCard({ theme, level, onStartQuiz, onBack, onWordViewed }: Props) {
   const [index, setIndex] = useState(0);
   const word = theme.words[index];
   const total = theme.words.length;
 
   const handlePrev = () => setIndex((i) => Math.max(0, i - 1));
-  const handleNext = () => setIndex((i) => Math.min(total - 1, i + 1));
+  const handleNext = () => {
+    onWordViewed?.(theme.id, word.word, false);
+    setIndex((i) => Math.min(total - 1, i + 1));
+  };
+  const handleStartQuiz = () => {
+    onWordViewed?.(theme.id, word.word, true);
+    onStartQuiz();
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
@@ -277,7 +285,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
 
         {index === total - 1 ? (
           <button
-            onClick={onStartQuiz}
+            onClick={handleStartQuiz}
             style={{
               flex: 2,
               background: 'linear-gradient(135deg, #B8F0E6 0%, #B8D4FF 100%)',
@@ -320,7 +328,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack }: Props) {
       {/* Quiz shortcut */}
       {index < total - 1 && (
         <button
-          onClick={onStartQuiz}
+          onClick={handleStartQuiz}
           style={{
             background: 'none',
             border: 'none',
