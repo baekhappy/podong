@@ -1,11 +1,20 @@
 import { themes } from '../data/index';
 import type { ProgressData } from '../utils/progress';
+import { loadStreak } from '../utils/streak';
 
 interface Props {
   progress: ProgressData;
 }
 
+function getAchievement(streak: number): string | null {
+  if (streak >= 30) return '한 달 연속 학습! 최고예요! 🏆';
+  if (streak >= 7)  return '일주일 연속 학습! 대단해요! 🎉';
+  if (streak >= 3)  return '3일 연속 학습! 잘하고 있어요! 🌟';
+  return null;
+}
+
 export default function Progress({ progress }: Props) {
+  const streakData = loadStreak();
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
       <div style={{ marginBottom: 24 }}>
@@ -75,21 +84,54 @@ export default function Progress({ progress }: Props) {
           borderRadius: 20,
           padding: '20px 16px',
           boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-          textAlign: 'center',
         }}>
-          <div style={{ fontSize: 28, marginBottom: 6 }}>🔥</div>
-          <div style={{
-            fontSize: 44,
-            fontWeight: 900,
-            color: 'var(--text-dark)',
-            fontFamily: "'Jua', sans-serif",
-            lineHeight: 1,
-          }}>
-            {progress.streak}일
+          <div style={{ display: 'flex', gap: 12 }}>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>🔥</div>
+              <div style={{
+                fontSize: 36,
+                fontWeight: 900,
+                color: 'var(--text-dark)',
+                fontFamily: "'Jua', sans-serif",
+                lineHeight: 1,
+              }}>
+                {streakData.streak}일
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-soft)', fontWeight: 700, marginTop: 4 }}>
+                현재 연속
+              </div>
+            </div>
+            <div style={{ width: 1, background: 'rgba(255,255,255,0.4)', margin: '4px 0' }} />
+            <div style={{ flex: 1, textAlign: 'center' }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>🏆</div>
+              <div style={{
+                fontSize: 36,
+                fontWeight: 900,
+                color: 'var(--text-dark)',
+                fontFamily: "'Jua', sans-serif",
+                lineHeight: 1,
+              }}>
+                {streakData.maxStreak}일
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-soft)', fontWeight: 700, marginTop: 4 }}>
+                최고 기록
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-soft)', fontWeight: 700, marginTop: 6 }}>
-            연속 학습 중!
-          </div>
+          {getAchievement(streakData.streak) && (
+            <div style={{
+              marginTop: 14,
+              background: 'rgba(255,255,255,0.5)',
+              borderRadius: 12,
+              padding: '8px 12px',
+              fontSize: 13,
+              fontWeight: 800,
+              color: 'var(--text-dark)',
+              textAlign: 'center',
+            }}>
+              {getAchievement(streakData.streak)}
+            </div>
+          )}
         </div>
       </div>
 

@@ -7,8 +7,11 @@ import Quiz from './components/Quiz';
 import QuizResult from './components/QuizResult';
 import Progress from './components/Progress';
 import Onboarding from './components/Onboarding';
+import StreakPopup from './components/StreakPopup';
 import { loadProgress, recordWord, saveWrongWords } from './utils/progress';
 import type { ProgressData } from './utils/progress';
+import { loadStreak, updateStreak } from './utils/streak';
+import type { StreakData } from './utils/streak';
 
 const levelBadge: Record<Level, string> = {
   children: '어린이 🌈',
@@ -48,6 +51,9 @@ export default function App() {
     setShowOnboarding(false);
   };
 
+  const [streakData, setStreakData] = useState<StreakData>(() => loadStreak());
+  const [showStreakPopup, setShowStreakPopup] = useState(false);
+
   const handleLevelSelect = (l: Level) => {
     setLevel(l);
     setScreen('theme');
@@ -69,6 +75,9 @@ export default function App() {
 
   const handleWordViewed = (themeId: string, wordText: string, isLast: boolean) => {
     setProgress(recordWord(themeId, wordText, isLast));
+    const { data, isNew } = updateStreak();
+    setStreakData(data);
+    if (isNew) setShowStreakPopup(true);
   };
 
   const activeNav =
@@ -86,6 +95,9 @@ export default function App() {
     <div className="app-layout">
 
       {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
+      {showStreakPopup && (
+        <StreakPopup streak={streakData.streak} onDismiss={() => setShowStreakPopup(false)} />
+      )}
 
       {/* ── Header ── */}
       <header className="app-header">
@@ -128,8 +140,18 @@ export default function App() {
           )}
         </div>
 
-        {/* Right: Today count + Login */}
+        {/* Right: Streak + Today count + Login */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10 }}>
+          {streakData.streak > 0 && (
+            <span style={{
+              fontSize: 13,
+              fontWeight: 800,
+              color: streakData.streak >= 7 ? '#E05000' : 'var(--text-soft)',
+              whiteSpace: 'nowrap',
+            }}>
+              🔥 {streakData.streak}일
+            </span>
+          )}
           {progress.todayWords.length > 0 && (
             <span style={{
               fontSize: 13,
