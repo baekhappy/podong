@@ -25,7 +25,7 @@ export function loadProgress(): ProgressData {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw) as ProgressData;
-      const withDefaults: ProgressData = { wrongWords: {}, ...data };
+      const withDefaults: ProgressData = { ...data, wrongWords: data.wrongWords ?? {} };
       if (withDefaults.todayDate !== todayStr()) {
         return { ...withDefaults, todayDate: todayStr(), todayWords: [] };
       }
