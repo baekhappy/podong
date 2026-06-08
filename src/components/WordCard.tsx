@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Level, ThemeData, WordData } from '../data/types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   theme: ThemeData;
@@ -39,6 +40,7 @@ function speakText(text: string) {
 }
 
 export default function WordCard({ theme, level, onStartQuiz, onBack, onWordViewed }: Props) {
+  const { t } = useLanguage();
   const [index, setIndex] = useState(0);
   const word = theme.words[index];
   const total = theme.words.length;
@@ -153,7 +155,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
             </h2>
             <button
               onClick={() => speakText(word.word)}
-              title="단어 발음 듣기"
+              title={t.listen}
               style={{
                 background: 'rgba(255,255,255,0.8)',
                 border: 'none',
@@ -222,11 +224,11 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
                 textTransform: 'uppercase',
                 letterSpacing: 1,
               }}>
-                예문
+                {t.example}
               </p>
               <button
                 onClick={() => speakText(getExample(word, level))}
-                title="예문 발음 듣기"
+                title={t.listen}
                 style={{
                   background: 'rgba(255,255,255,0.6)',
                   border: 'none',
@@ -280,7 +282,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
             transition: 'transform 0.15s',
           }}
         >
-          ← 이전
+          ← {t.prev}
         </button>
 
         {index === total - 1 ? (
@@ -301,7 +303,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
               transition: 'transform 0.15s',
             }}
           >
-            퀴즈 시작 🎯
+            {t.startQuiz} 🎯
           </button>
         ) : (
           <button
@@ -320,7 +322,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
               transition: 'transform 0.15s',
             }}
           >
-            다음 →
+            {t.next} →
           </button>
         )}
       </div>
@@ -340,7 +342,7 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
             textDecoration: 'underline',
           }}
         >
-          바로 퀴즈 풀기 →
+          {t.goQuizNow}
         </button>
       )}
     </div>

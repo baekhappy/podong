@@ -1,4 +1,5 @@
 import type { Level, WordData, ThemeData } from '../data/types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   correct: number;
@@ -27,34 +28,38 @@ function speakText(text: string) {
   window.speechSynthesis.speak(u);
 }
 
-function getRating(pct: number) {
-  if (pct === 100) return { msg: '완벽해요!', emoji: '🏆', bg: 'linear-gradient(135deg, #FFF5B8 0%, #B8F0E6 100%)' };
-  if (pct >= 80)  return { msg: '잘했어요!',  emoji: '🌟', bg: 'linear-gradient(135deg, #B8F0E6 0%, #C8EEFF 100%)' };
-  if (pct >= 60)  return { msg: '좋아요!',    emoji: '👍', bg: 'linear-gradient(135deg, #B8D4FF 0%, #FFD6E8 100%)' };
-  return           { msg: '다시 도전해봐요!', emoji: '💪', bg: 'linear-gradient(135deg, #FFD6E8 0%, #FFF5B8 100%)' };
-}
-
-function formatTime(s: number): string {
-  const m = Math.floor(s / 60);
-  return m > 0 ? `${m}분 ${s % 60}초` : `${s}초`;
+function getRatingBg(pct: number): { emoji: string; bg: string } {
+  if (pct === 100) return { emoji: '🏆', bg: 'linear-gradient(135deg, #FFF5B8 0%, #B8F0E6 100%)' };
+  if (pct >= 80)   return { emoji: '🌟', bg: 'linear-gradient(135deg, #B8F0E6 0%, #C8EEFF 100%)' };
+  if (pct >= 60)   return { emoji: '👍', bg: 'linear-gradient(135deg, #B8D4FF 0%, #FFD6E8 100%)' };
+  return           { emoji: '💪', bg: 'linear-gradient(135deg, #FFD6E8 0%, #FFF5B8 100%)' };
 }
 
 export default function QuizResult({ correct, total, wrongWords, elapsedSeconds, level, theme, onRetry, onRetryWrong, onGoTheme }: Props) {
+  const { lang, t } = useLanguage();
   const pct = total === 0 ? 0 : Math.round((correct / total) * 100);
-  const rating = getRating(pct);
+  const { emoji, bg } = getRatingBg(pct);
+
+  const ratingMsg = pct === 100 ? t.perfect : pct >= 80 ? t.great : pct >= 60 ? t.good : t.tryMore;
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    if (lang === 'ko') return m > 0 ? `${m}분 ${s % 60}초` : `${s}초`;
+    return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px', gap: 20 }}>
 
       {/* 점수 카드 */}
       <div style={{
-        background: rating.bg,
+        background: bg,
         borderRadius: 28,
         padding: '32px 24px',
         textAlign: 'center',
         boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
       }}>
-        <div className="anim-bounce" style={{ fontSize: 64, marginBottom: 8 }}>{rating.emoji}</div>
+        <div className="anim-bounce" style={{ fontSize: 64, marginBottom: 8 }}>{emoji}</div>
         <h2 style={{
           fontSize: 28,
           fontWeight: 900,
@@ -62,7 +67,7 @@ export default function QuizResult({ correct, total, wrongWords, elapsedSeconds,
           margin: '0 0 20px',
           fontFamily: "'Jua', sans-serif",
         }}>
-          {rating.msg}
+          {ratingMsg}
         </h2>
 
         <div style={{
@@ -120,12 +125,12 @@ export default function QuizResult({ correct, total, wrongWords, elapsedSeconds,
           margin: '0 0 16px',
           fontFamily: "'Jua', sans-serif",
         }}>
-          틀린 단어 복습
+          {t.wrongWords}
         </h3>
 
         {wrongWords.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '20px 0', fontSize: 22 }}>
-            모두 맞혔어요! 🎉
+            {t.noWrong}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -241,7 +246,7 @@ export default function QuizResult({ correct, total, wrongWords, elapsedSeconds,
             fontFamily: "'Jua', sans-serif",
           }}
         >
-          🔄 다시 풀기
+          🔄 {t.tryAgain}
         </button>
 
         {wrongWords.length > 0 && (
@@ -260,7 +265,7 @@ export default function QuizResult({ correct, total, wrongWords, elapsedSeconds,
               fontFamily: "'Jua', sans-serif",
             }}
           >
-            ❌ 틀린 단어만 다시 풀기 ({wrongWords.length}개)
+            ❌ {t.tryWrongOnly} ({wrongWords.length})
           </button>
         )}
 
@@ -279,7 +284,7 @@ export default function QuizResult({ correct, total, wrongWords, elapsedSeconds,
             fontFamily: "'Jua', sans-serif",
           }}
         >
-          📚 테마 목록으로
+          📚 {t.backToThemes}
         </button>
       </div>
 

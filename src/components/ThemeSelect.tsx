@@ -1,5 +1,6 @@
 import type { Level, ThemeData } from '../data/types';
 import { themes } from '../data/index';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   level: Level;
@@ -7,13 +8,6 @@ interface Props {
   onBack: () => void;
   completedThemes?: string[];
 }
-
-const levelLabels: Record<Level, string> = {
-  children: '어린이',
-  beginner: '초급',
-  intermediate: '중급',
-  advanced: '고급',
-};
 
 const levelColors: Record<Level, string> = {
   children: 'linear-gradient(135deg, #FFD6E8 0%, #FFF5B8 100%)',
@@ -29,6 +23,9 @@ const themeColors = [
 ];
 
 export default function ThemeSelect({ level, onSelect, onBack, completedThemes = [] }: Props) {
+  const { lang, t } = useLanguage();
+  const levelLabel = t[`level_${level}` as keyof typeof t] as string;
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
       {/* Header */}
@@ -60,7 +57,7 @@ export default function ThemeSelect({ level, onSelect, onBack, completedThemes =
             margin: 0,
             fontFamily: "'Jua', sans-serif",
           }}>
-            테마 선택
+            {t.chooseTheme}
           </h2>
           <div style={{
             display: 'inline-block',
@@ -72,7 +69,7 @@ export default function ThemeSelect({ level, onSelect, onBack, completedThemes =
             color: 'var(--text-dark)',
             marginTop: 4,
           }}>
-            {levelLabels[level]} 레벨
+            {lang === 'ko' ? `${levelLabel} 레벨` : levelLabel}
           </div>
         </div>
       </div>
@@ -84,7 +81,7 @@ export default function ThemeSelect({ level, onSelect, onBack, completedThemes =
         fontWeight: 600,
         textAlign: 'center',
       }}>
-        어떤 단어를 배울까요?
+        {t.whatToLearn}
       </p>
 
       {/* Theme Grid */}
@@ -144,7 +141,7 @@ export default function ThemeSelect({ level, onSelect, onBack, completedThemes =
                 padding: '2px 8px',
                 fontWeight: 700,
               }}>
-                {theme.words.length}개 단어
+                {lang === 'ko' ? `${theme.words.length}개 단어` : `${theme.words.length} words`}
               </span>
             </button>
           );

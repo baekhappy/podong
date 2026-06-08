@@ -12,12 +12,13 @@ import { loadProgress, recordWord, saveWrongWords } from './utils/progress';
 import type { ProgressData } from './utils/progress';
 import { loadStreak, updateStreak } from './utils/streak';
 import type { StreakData } from './utils/streak';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 
-const levelBadge: Record<Level, string> = {
-  children: '어린이 🌈',
-  beginner: '초급 🌱',
-  intermediate: '중급 🌿',
-  advanced: '고급 🌊',
+const levelBadgeEmoji: Record<Level, string> = {
+  children: '🌈',
+  beginner: '🌱',
+  intermediate: '🌿',
+  advanced: '🌊',
 };
 
 const levelBadgeColor: Record<Level, string> = {
@@ -28,14 +29,16 @@ const levelBadgeColor: Record<Level, string> = {
 };
 
 const NAV = [
-  { id: 'home',      icon: '🏠', label: '홈',      shortLabel: '홈' },
-  { id: 'theme',     icon: '📚', label: '테마 목록', shortLabel: '테마' },
-  { id: 'favorites', icon: '⭐', label: '즐겨찾기', shortLabel: '즐겨찾기' },
-  { id: 'progress',  icon: '📊', label: '학습 진도', shortLabel: '진도' },
-  { id: 'settings',  icon: '⚙️', label: '설정',     shortLabel: '설정' },
+  { id: 'home',      icon: '🏠' },
+  { id: 'theme',     icon: '📚' },
+  { id: 'favorites', icon: '⭐' },
+  { id: 'progress',  icon: '📊' },
+  { id: 'settings',  icon: '⚙️' },
 ];
 
-export default function App() {
+function AppContent() {
+  const { lang, t, toggleLang } = useLanguage();
+
   const [screen, setScreen] = useState<Screen>('level');
   const [level, setLevel] = useState<Level>('beginner');
   const [selectedTheme, setSelectedTheme] = useState<ThemeData | null>(null);
@@ -91,6 +94,24 @@ export default function App() {
     if (id === 'progress') setScreen('progress');
   };
 
+  const navLabel = (id: string) => {
+    if (id === 'home') return t.home;
+    if (id === 'theme') return t.themes;
+    if (id === 'favorites') return t.favorites;
+    if (id === 'progress') return t.myProgress;
+    return t.settings;
+  };
+
+  const levelBadgeText = `${t[`level_${level}` as keyof typeof t]} ${levelBadgeEmoji[level]}`;
+
+  const streakText = lang === 'ko'
+    ? `🔥 ${streakData.streak}일`
+    : `🔥 ${streakData.streak} ${t.days}`;
+
+  const todayText = lang === 'ko'
+    ? `📖 오늘 ${progress.todayWords.length}단어`
+    : `📖 ${progress.todayWords.length} words`;
+
   return (
     <div className="app-layout">
 
@@ -135,13 +156,29 @@ export default function App() {
               fontWeight: 800,
               color: 'var(--text-dark)',
             }}>
-              {levelBadge[level]}
+              {levelBadgeText}
             </span>
           )}
         </div>
 
-        {/* Right: Streak + Today count + Login */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10 }}>
+        {/* Right: Lang toggle + Streak + Today count + Login */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={toggleLang}
+            title={lang === 'ko' ? '영어로 보기' : '한국어로 보기'}
+            style={{
+              background: 'rgba(255,255,255,0.6)',
+              border: 'none',
+              borderRadius: 14,
+              padding: '5px 9px',
+              fontSize: 20,
+              cursor: 'pointer',
+              lineHeight: 1,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}
+          >
+            {lang === 'ko' ? '🇺🇸' : '🇰🇷'}
+          </button>
           {streakData.streak > 0 && (
             <span style={{
               fontSize: 13,
@@ -149,7 +186,7 @@ export default function App() {
               color: streakData.streak >= 7 ? '#E05000' : 'var(--text-soft)',
               whiteSpace: 'nowrap',
             }}>
-              🔥 {streakData.streak}일
+              {streakText}
             </span>
           )}
           {progress.todayWords.length > 0 && (
@@ -159,7 +196,7 @@ export default function App() {
               color: 'var(--text-soft)',
               whiteSpace: 'nowrap',
             }}>
-              📖 오늘 {progress.todayWords.length}단어
+              {todayText}
             </span>
           )}
           <button style={{
@@ -172,7 +209,7 @@ export default function App() {
             color: 'var(--text-dark)',
             cursor: 'pointer',
           }}>
-            로그인
+            {t.login}
           </button>
         </div>
 
@@ -191,7 +228,7 @@ export default function App() {
                 className={`app-sidebar-btn${activeNav === item.id ? ' active' : ''}`}
               >
                 <span style={{ fontSize: 18 }}>{item.icon}</span>
-                {item.label}
+                {navLabel(item.id)}
               </button>
             ))}
           </nav>
@@ -289,11 +326,19 @@ export default function App() {
             }}
           >
             <span style={{ fontSize: 20 }}>{item.icon}</span>
-            <span>{item.shortLabel}</span>
+            <span>{navLabel(item.id)}</span>
           </button>
         ))}
       </nav>
 
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

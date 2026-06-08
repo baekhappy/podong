@@ -1,20 +1,31 @@
 import { themes } from '../data/index';
 import type { ProgressData } from '../utils/progress';
 import { loadStreak } from '../utils/streak';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   progress: ProgressData;
 }
 
-function getAchievement(streak: number): string | null {
-  if (streak >= 30) return '한 달 연속 학습! 최고예요! 🏆';
-  if (streak >= 7)  return '일주일 연속 학습! 대단해요! 🎉';
-  if (streak >= 3)  return '3일 연속 학습! 잘하고 있어요! 🌟';
-  return null;
-}
-
 export default function Progress({ progress }: Props) {
+  const { lang, t } = useLanguage();
   const streakData = loadStreak();
+
+  const achievement = (() => {
+    if (streakData.streak >= 30) return t.streak30;
+    if (streakData.streak >= 7)  return t.streak7;
+    if (streakData.streak >= 3)  return t.streak3;
+    return null;
+  })();
+
+  const streakNum = lang === 'ko'
+    ? `${streakData.streak}일`
+    : `${streakData.streak} ${t.days}`;
+
+  const maxStreakNum = lang === 'ko'
+    ? `${streakData.maxStreak}일`
+    : `${streakData.maxStreak} ${t.days}`;
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
       <div style={{ marginBottom: 24 }}>
@@ -25,10 +36,10 @@ export default function Progress({ progress }: Props) {
           margin: '0 0 4px',
           fontFamily: "'Jua', sans-serif",
         }}>
-          학습 진도
+          {t.myProgress}
         </h2>
         <p style={{ fontSize: 15, color: 'var(--text-soft)', fontWeight: 600, margin: 0 }}>
-          나의 학습 기록을 확인해요
+          {t.myRecords}
         </p>
       </div>
 
@@ -52,7 +63,7 @@ export default function Progress({ progress }: Props) {
             {progress.todayWords.length}
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-soft)', fontWeight: 700, marginTop: 6 }}>
-            오늘 학습
+            {t.todayWords}
           </div>
         </div>
 
@@ -74,7 +85,7 @@ export default function Progress({ progress }: Props) {
             {progress.totalWords}
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-soft)', fontWeight: 700, marginTop: 6 }}>
-            전체 누적
+            {t.totalWords}
           </div>
         </div>
 
@@ -95,10 +106,10 @@ export default function Progress({ progress }: Props) {
                 fontFamily: "'Jua', sans-serif",
                 lineHeight: 1,
               }}>
-                {streakData.streak}일
+                {streakNum}
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-soft)', fontWeight: 700, marginTop: 4 }}>
-                현재 연속
+                {t.currentStreak}
               </div>
             </div>
             <div style={{ width: 1, background: 'rgba(255,255,255,0.4)', margin: '4px 0' }} />
@@ -111,14 +122,14 @@ export default function Progress({ progress }: Props) {
                 fontFamily: "'Jua', sans-serif",
                 lineHeight: 1,
               }}>
-                {streakData.maxStreak}일
+                {maxStreakNum}
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-soft)', fontWeight: 700, marginTop: 4 }}>
-                최고 기록
+                {t.bestStreak}
               </div>
             </div>
           </div>
-          {getAchievement(streakData.streak) && (
+          {achievement && (
             <div style={{
               marginTop: 14,
               background: 'rgba(255,255,255,0.5)',
@@ -129,7 +140,7 @@ export default function Progress({ progress }: Props) {
               color: 'var(--text-dark)',
               textAlign: 'center',
             }}>
-              {getAchievement(streakData.streak)}
+              {achievement}
             </div>
           )}
         </div>
@@ -143,7 +154,7 @@ export default function Progress({ progress }: Props) {
           padding: '20px',
           boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
           backdropFilter: 'blur(8px)',
-          marginBottom: 0,
+          marginBottom: 24,
         }}>
           <h3 style={{
             fontSize: 17,
@@ -152,13 +163,13 @@ export default function Progress({ progress }: Props) {
             margin: '0 0 16px',
             fontFamily: "'Jua', sans-serif",
           }}>
-            틀린 단어 복습
+            {t.wrongWords}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {Object.entries(progress.wrongWords)
               .filter(([, words]) => words.length > 0)
               .map(([themeId, words]) => {
-                const theme = themes.find((t) => t.id === themeId);
+                const theme = themes.find((th) => th.id === themeId);
                 if (!theme) return null;
                 return (
                   <div key={themeId} style={{
@@ -211,7 +222,7 @@ export default function Progress({ progress }: Props) {
           margin: '0 0 16px',
           fontFamily: "'Jua', sans-serif",
         }}>
-          테마 학습 현황
+          {t.completedThemes}
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {themes.map((theme) => {
@@ -244,7 +255,7 @@ export default function Progress({ progress }: Props) {
                   {theme.title}
                 </span>
                 <span style={{ fontSize: done ? 18 : 13, color: done ? undefined : 'var(--text-soft)', fontWeight: 600 }}>
-                  {done ? '✅' : '미완료'}
+                  {done ? '✅' : t.incomplete}
                 </span>
               </div>
             );

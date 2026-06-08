@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { Level, ThemeData, WordData } from '../data/types';
 import { playSound } from '../utils/sound';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   theme: ThemeData;
@@ -47,6 +48,7 @@ const feedbackColors = {
 };
 
 export default function Quiz({ theme, level, onComplete, onBack }: Props) {
+  const { lang, t } = useLanguage();
   const [questions] = useState(() => generateQuestions(theme, level));
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -113,6 +115,9 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
     return { ...base, opacity: 0.5 };
   };
 
+  const correctMsg = lang === 'ko' ? `✅ 정답! ` : `✅ ${t.correct}! `;
+  const wrongMsg = lang === 'ko' ? `❌ 정답은 ` : `❌ ${t.correct}: `;
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px 20px' }}>
       {/* Header */}
@@ -138,7 +143,7 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
         </button>
         <div style={{ flex: 1, textAlign: 'center' }}>
           <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--text-dark)', fontFamily: "'Jua', sans-serif" }}>
-            {theme.emoji} 퀴즈
+            {theme.emoji} {t.quiz}
           </span>
         </div>
         <div style={{
@@ -175,7 +180,7 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
           fontWeight: 800,
           color: 'var(--text-dark)',
         }}>
-          점수 {score} / {qIndex}
+          {t.score} {score} / {qIndex}
         </span>
       </div>
 
@@ -200,7 +205,7 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
               textTransform: 'uppercase',
               letterSpacing: 1,
             }}>
-              빈칸에 알맞은 단어를 고르세요
+              {t.fillBlank}
             </p>
             <div style={{
               fontSize: 18,
@@ -215,12 +220,12 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
             </div>
             {feedback === 'correct' && (
               <div style={{ marginTop: 12, fontSize: 16, fontWeight: 700, color: 'var(--text-dark)' }}>
-                ✅ 정답! <strong>{q.word.word}</strong>
+                {correctMsg}<strong>{q.word.word}</strong>
               </div>
             )}
             {feedback === 'wrong' && (
               <div style={{ marginTop: 12, fontSize: 16, fontWeight: 700, color: 'var(--text-dark)' }}>
-                ❌ 정답은 <strong>{q.word.word}</strong>
+                {wrongMsg}<strong>{q.word.word}</strong>
               </div>
             )}
           </div>
@@ -235,7 +240,7 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
               textTransform: 'uppercase',
               letterSpacing: 1,
             }}>
-              이 표현은 무엇일까요?
+              {t.chooseWord}
             </p>
             <div style={{ fontSize: 64, marginBottom: 12 }}>{q.word.emoji}</div>
             <p style={{
@@ -254,12 +259,12 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
             )}
             {feedback === 'correct' && (
               <div style={{ marginTop: 12, fontSize: 16, fontWeight: 700, color: 'var(--text-dark)' }}>
-                ✅ 정답! <strong>{q.word.word}</strong>
+                {correctMsg}<strong>{q.word.word}</strong>
               </div>
             )}
             {feedback === 'wrong' && (
               <div style={{ marginTop: 12, fontSize: 16, fontWeight: 700, color: 'var(--text-dark)' }}>
-                ❌ 정답은 <strong>{q.word.word}</strong>
+                {wrongMsg}<strong>{q.word.word}</strong>
               </div>
             )}
           </div>
