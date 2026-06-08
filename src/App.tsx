@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import type { Level, Screen, ThemeData } from './data/types';
+import type { Level, Screen, ThemeData, WordData } from './data/types';
 import LevelSelect from './components/LevelSelect';
 import ThemeSelect from './components/ThemeSelect';
 import WordCard from './components/WordCard';
 import Quiz from './components/Quiz';
-import Result from './components/Result';
+import QuizResult from './components/QuizResult';
 import Progress from './components/Progress';
-import { loadProgress, recordWord } from './utils/progress';
+import { loadProgress, recordWord, saveWrongWords } from './utils/progress';
 import type { ProgressData } from './utils/progress';
 
 const levelBadge: Record<Level, string> = {
@@ -35,7 +35,10 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('level');
   const [level, setLevel] = useState<Level>('beginner');
   const [selectedTheme, setSelectedTheme] = useState<ThemeData | null>(null);
-  const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
+  const [quizScore, setQuizScore] = useState({ correct: 0, total: 0, elapsed: 0 });
+  const [quizWrongWords, setQuizWrongWords] = useState<WordData[]>([]);
+  const [quizOverrideTheme, setQuizOverrideTheme] = useState<ThemeData | null>(null);
+  const [quizKey, setQuizKey] = useState(0);
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
 
   const handleLevelSelect = (l: Level) => {
@@ -48,8 +51,12 @@ export default function App() {
     setScreen('study');
   };
 
-  const handleQuizComplete = (correct: number, total: number) => {
-    setQuizScore({ correct, total });
+  const handleQuizComplete = (correct: number, total: number, wrongWords: WordData[], elapsed: number) => {
+    setQuizScore({ correct, total, elapsed });
+    setQuizWrongWords(wrongWords);
+    if (selectedTheme) {
+      setProgress(saveWrongWords(selectedTheme.id, wrongWords.map((w) => w.word)));
+    }
     setScreen('result');
   };
 
@@ -178,27 +185,45 @@ export default function App() {
               <WordCard
                 theme={selectedTheme}
                 level={level}
-                onStartQuiz={() => setScreen('quiz')}
+                onStartQuiz={() => {
+                  setQuizOverrideTheme(null);
+                  setQuizKey((k) => k + 1);
+                  setScreen('quiz');
+                }}
                 onBack={() => setScreen('theme')}
                 onWordViewed={handleWordViewed}
               />
             )}
             {screen === 'quiz' && selectedTheme && (
               <Quiz
-                theme={selectedTheme}
+                key={quizKey}
+                theme={quizOverrideTheme ?? selectedTheme}
                 level={level}
                 onComplete={handleQuizComplete}
-                onBack={() => setScreen('study')}
+                onBack={() => { setQuizOverrideTheme(null); setScreen('study'); }}
               />
             )}
-            {screen === 'result' && (
-              <Result
+            {screen === 'result' && selectedTheme && (
+              <QuizResult
                 correct={quizScore.correct}
                 total={quizScore.total}
+                wrongWords={quizWrongWords}
+                elapsedSeconds={quizScore.elapsed}
                 level={level}
-                onRestart={() => setScreen('level')}
-                onRetry={() => setScreen('quiz')}
-                onGoHome={() => setScreen('theme')}
+                theme={quizOverrideTheme ?? selectedTheme}
+                onRetry={() => {
+                  setQuizOverrideTheme(null);
+                  setQuizKey((k) => k + 1);
+                  setScreen('quiz');
+                }}
+                onRetryWrong={() => {
+                  if (quizWrongWords.length > 0) {
+                    setQuizOverrideTheme({ ...selectedTheme, words: quizWrongWords });
+                    setQuizKey((k) => k + 1);
+                    setScreen('quiz');
+                  }
+                }}
+                onGoTheme={() => { setQuizOverrideTheme(null); setScreen('theme'); }}
               />
             )}
             {screen === 'progress' && (

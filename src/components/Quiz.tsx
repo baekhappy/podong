@@ -5,7 +5,7 @@ import { playSound } from '../utils/sound';
 interface Props {
   theme: ThemeData;
   level: Level;
-  onComplete: (correct: number, total: number) => void;
+  onComplete: (correct: number, total: number, wrongWords: WordData[], elapsedSeconds: number) => void;
   onBack: () => void;
 }
 
@@ -53,6 +53,8 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongWordsRef = useRef<WordData[]>([]);
+  const startTimeRef = useRef(Date.now());
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
@@ -69,10 +71,14 @@ export default function Quiz({ theme, level, onComplete, onBack }: Props) {
       playSound('correct');
     } else {
       playSound('wrong');
+      if (!wrongWordsRef.current.some((w) => w.word === q.word.word)) {
+        wrongWordsRef.current = [...wrongWordsRef.current, q.word];
+      }
     }
     timerRef.current = setTimeout(() => {
       if (qIndex + 1 >= questions.length) {
-        onComplete(isCorrect ? score + 1 : score, questions.length);
+        const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
+        onComplete(isCorrect ? score + 1 : score, questions.length, wrongWordsRef.current, elapsed);
       } else {
         setQIndex((i) => i + 1);
         setSelected(null);

@@ -93,6 +93,67 @@ export default function Progress({ progress }: Props) {
         </div>
       </div>
 
+      {/* 틀린 단어 복습 */}
+      {Object.keys(progress.wrongWords || {}).some((k) => (progress.wrongWords[k]?.length ?? 0) > 0) && (
+        <div style={{
+          background: 'rgba(255,255,255,0.85)',
+          borderRadius: 20,
+          padding: '20px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+          backdropFilter: 'blur(8px)',
+          marginBottom: 0,
+        }}>
+          <h3 style={{
+            fontSize: 17,
+            fontWeight: 900,
+            color: 'var(--text-dark)',
+            margin: '0 0 16px',
+            fontFamily: "'Jua', sans-serif",
+          }}>
+            틀린 단어 복습
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {Object.entries(progress.wrongWords)
+              .filter(([, words]) => words.length > 0)
+              .map(([themeId, words]) => {
+                const theme = themes.find((t) => t.id === themeId);
+                if (!theme) return null;
+                return (
+                  <div key={themeId} style={{
+                    background: 'linear-gradient(135deg, #FFD6E8 0%, #FFF5B8 100%)',
+                    borderRadius: 14,
+                    padding: '12px 16px',
+                  }}>
+                    <div style={{
+                      fontSize: 14,
+                      fontWeight: 900,
+                      color: 'var(--text-dark)',
+                      fontFamily: "'Jua', sans-serif",
+                      marginBottom: 6,
+                    }}>
+                      {theme.emoji} {theme.title}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {words.map((w) => (
+                        <span key={w} style={{
+                          background: 'rgba(255,255,255,0.7)',
+                          borderRadius: 10,
+                          padding: '3px 10px',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: 'var(--text-dark)',
+                        }}>
+                          {w}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* 테마 현황 */}
       <div style={{
         background: 'rgba(255,255,255,0.85)',

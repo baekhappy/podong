@@ -7,6 +7,7 @@ export interface ProgressData {
   completedThemes: string[];
   streak: number;
   lastLearnDate: string;
+  wrongWords: Record<string, string[]>;
 }
 
 function todayStr(): string {
@@ -24,10 +25,11 @@ export function loadProgress(): ProgressData {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw) as ProgressData;
-      if (data.todayDate !== todayStr()) {
-        return { ...data, todayDate: todayStr(), todayWords: [] };
+      const withDefaults: ProgressData = { wrongWords: {}, ...data };
+      if (withDefaults.todayDate !== todayStr()) {
+        return { ...withDefaults, todayDate: todayStr(), todayWords: [] };
       }
-      return data;
+      return withDefaults;
     }
   } catch {}
   return {
@@ -37,6 +39,7 @@ export function loadProgress(): ProgressData {
     completedThemes: [],
     streak: 0,
     lastLearnDate: '',
+    wrongWords: {},
   };
 }
 
@@ -64,6 +67,16 @@ export function recordWord(
     updated.completedThemes = [...data.completedThemes, themeId];
   }
 
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  return updated;
+}
+
+export function saveWrongWords(themeId: string, wordTexts: string[]): ProgressData {
+  const data = loadProgress();
+  const updated: ProgressData = {
+    ...data,
+    wrongWords: { ...data.wrongWords, [themeId]: wordTexts },
+  };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   return updated;
 }
