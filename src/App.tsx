@@ -6,6 +6,7 @@ import WordCard from './components/WordCard';
 import Quiz from './components/Quiz';
 import QuizResult from './components/QuizResult';
 import Progress from './components/Progress';
+import Onboarding from './components/Onboarding';
 import { loadProgress, recordWord, saveWrongWords } from './utils/progress';
 import type { ProgressData } from './utils/progress';
 
@@ -40,6 +41,12 @@ export default function App() {
   const [quizOverrideTheme, setQuizOverrideTheme] = useState<ThemeData | null>(null);
   const [quizKey, setQuizKey] = useState(0);
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('podong_onboarded'));
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('podong_onboarded', '1');
+    setShowOnboarding(false);
+  };
 
   const handleLevelSelect = (l: Level) => {
     setLevel(l);
@@ -77,6 +84,8 @@ export default function App() {
 
   return (
     <div className="app-layout">
+
+      {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
 
       {/* ── Header ── */}
       <header className="app-header">
