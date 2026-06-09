@@ -131,7 +131,7 @@ export default function ThemeSelect({ level, onSelect, onBack, completedThemes =
                 fontFamily: "'Jua', sans-serif",
                 lineHeight: 1.3,
               }}>
-                {theme.title}
+                {lang === 'ko' ? theme.title : theme.titleEn}
               </span>
               <span style={{
                 fontSize: 13,

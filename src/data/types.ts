@@ -16,6 +16,7 @@ export interface WordData {
 export interface ThemeData {
   id: string;
   title: string;
+  titleEn: string;
   emoji: string;
   words: WordData[];
 }

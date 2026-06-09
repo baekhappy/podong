@@ -3,6 +3,7 @@ import type { ThemeData } from './types';
 const 행동: ThemeData = {
   id: 'action',
   title: '행동',
+  titleEn: 'Actions',
   emoji: '🏃',
   words: [
     {
