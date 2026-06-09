@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   streak: number;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export default function StreakPopup({ streak, onDismiss }: Props) {
+  const { lang, t } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -16,6 +18,10 @@ export default function StreakPopup({ streak, onDismiss }: Props) {
     }, 2100);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [onDismiss]);
+
+  const streakMsg = lang === 'ko'
+    ? `${streak}${t.streakPopup}`
+    : `${streak}${t.streakPopup}`;
 
   return (
     <div
@@ -45,7 +51,7 @@ export default function StreakPopup({ streak, onDismiss }: Props) {
         color: 'var(--text-dark)',
         fontFamily: "'Jua', sans-serif",
       }}>
-        {streak}일 연속 학습 중!
+        {streakMsg}
       </span>
     </div>
   );

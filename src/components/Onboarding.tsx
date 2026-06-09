@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   onComplete: () => void;
@@ -7,6 +8,7 @@ interface Props {
 const TOTAL = 3;
 
 export default function Onboarding({ onComplete }: Props) {
+  const { t } = useLanguage();
   const [slide, setSlide] = useState(0);
 
   const goNext = () => {
@@ -43,7 +45,7 @@ export default function Onboarding({ onComplete }: Props) {
           cursor: 'pointer',
         }}
       >
-        건너뛰기
+        {t.skip}
       </button>
 
       {/* 슬라이드 뷰포트 */}
@@ -306,7 +308,7 @@ export default function Onboarding({ onComplete }: Props) {
             transition: 'transform 0.15s',
           }}
         >
-          {slide === TOTAL - 1 ? '시작하기 🚀' : '다음 →'}
+          {slide === TOTAL - 1 ? `${t.start} 🚀` : `${t.next} →`}
         </button>
       </div>
 
