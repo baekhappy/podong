@@ -205,6 +205,17 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
           }}>
             {word.definition}
           </p>
+          {(level === 'children' || level === 'beginner') && (
+            <p style={{
+              fontSize: 14,
+              color: 'var(--text-soft)',
+              fontWeight: 600,
+              margin: '6px 0 0',
+              fontStyle: 'italic',
+            }}>
+              {word.definitionEn}
+            </p>
+          )}
         </div>
 
         {/* Example */}
