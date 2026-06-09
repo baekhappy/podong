@@ -3,7 +3,9 @@ export interface WordData {
   english: string;
   definition: string;
   exampleChildren: string;
+  exampleChildrenEn: string;
   exampleBeginner: string;
+  exampleBeginnerEn: string;
   exampleIntermediate: string;
   exampleAdvanced: string;
   animationType: string;

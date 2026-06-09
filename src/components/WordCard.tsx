@@ -257,6 +257,18 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
             }}>
               {getExample(word, level).replace(word.word, `✦ ${word.word} ✦`)}
             </p>
+            {(level === 'children' || level === 'beginner') && (
+              <p style={{
+                fontSize: 14,
+                color: 'var(--text-soft)',
+                fontWeight: 600,
+                margin: '6px 0 0',
+                lineHeight: 1.5,
+                fontStyle: 'italic',
+              }}>
+                {level === 'children' ? word.exampleChildrenEn : word.exampleBeginnerEn}
+              </p>
+            )}
           </div>
         )}
 
