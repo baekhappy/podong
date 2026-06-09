@@ -55,4 +55,8 @@ export const ko = {
   streak3: '3일 연속 학습! 잘하고 있어요! 🌟',
   streakPopup: '일 연속 학습 중!',
   goQuizNow: '바로 퀴즈 풀기 →',
+  noFavorites: '아직 즐겨찾기한 단어가 없어요',
+  favoritesHint: '단어 카드에서 ⭐ 버튼을 눌러 즐겨찾기하세요',
+  favoriteQuiz: '즐겨찾기 단어로 퀴즈 시작',
+  removeFavorite: '즐겨찾기 해제',
 };

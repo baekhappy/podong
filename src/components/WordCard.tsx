@@ -8,6 +8,8 @@ interface Props {
   onStartQuiz: () => void;
   onBack: () => void;
   onWordViewed?: (themeId: string, wordText: string, isLast: boolean) => void;
+  favorites?: string[];
+  onToggleFavorite?: (word: string) => void;
 }
 
 function getExample(word: WordData, level: Level): string {
@@ -39,11 +41,13 @@ function speakText(text: string) {
   window.speechSynthesis.speak(u);
 }
 
-export default function WordCard({ theme, level, onStartQuiz, onBack, onWordViewed }: Props) {
+export default function WordCard({ theme, level, onStartQuiz, onBack, onWordViewed, favorites = [], onToggleFavorite }: Props) {
   const { t } = useLanguage();
   const [index, setIndex] = useState(0);
+  const [justFavorited, setJustFavorited] = useState(false);
   const word = theme.words[index];
   const total = theme.words.length;
+  const isFavorited = favorites.includes(word.word);
 
   const handlePrev = () => setIndex((i) => Math.max(0, i - 1));
   const handleNext = () => {
@@ -53,6 +57,13 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
   const handleStartQuiz = () => {
     onWordViewed?.(theme.id, word.word, true);
     onStartQuiz();
+  };
+  const handleToggleFavorite = () => {
+    if (!isFavorited) {
+      setJustFavorited(true);
+      setTimeout(() => setJustFavorited(false), 350);
+    }
+    onToggleFavorite?.(word.word);
   };
 
   return (
@@ -173,6 +184,27 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
               }}
             >
               🔊
+            </button>
+            <button
+              onClick={handleToggleFavorite}
+              style={{
+                background: isFavorited ? 'rgba(255,214,100,0.35)' : 'rgba(255,255,255,0.8)',
+                border: 'none',
+                borderRadius: 12,
+                width: 36,
+                height: 36,
+                fontSize: 18,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                flexShrink: 0,
+                transition: 'transform 0.2s, background 0.2s',
+                transform: justFavorited ? 'scale(1.5)' : 'scale(1)',
+              }}
+            >
+              {isFavorited ? '⭐' : '☆'}
             </button>
           </div>
 

@@ -55,4 +55,8 @@ export const en = {
   streak3: 'Great! 3-day streak! 🌟',
   streakPopup: '-day streak!',
   goQuizNow: 'Go to Quiz →',
+  noFavorites: 'No favorites yet',
+  favoritesHint: 'Tap ⭐ on any word card to add favorites',
+  favoriteQuiz: 'Quiz with Favorites',
+  removeFavorite: 'Remove from Favorites',
 };

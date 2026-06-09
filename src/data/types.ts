@@ -23,4 +23,4 @@ export interface ThemeData {
 }
 
 export type Level = 'children' | 'beginner' | 'intermediate' | 'advanced';
-export type Screen = 'level' | 'theme' | 'study' | 'quiz' | 'result' | 'progress';
+export type Screen = 'level' | 'theme' | 'study' | 'quiz' | 'result' | 'progress' | 'favorites';

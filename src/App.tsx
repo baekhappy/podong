@@ -6,12 +6,14 @@ import WordCard from './components/WordCard';
 import Quiz from './components/Quiz';
 import QuizResult from './components/QuizResult';
 import Progress from './components/Progress';
+import Favorites from './components/Favorites';
 import Onboarding from './components/Onboarding';
 import StreakPopup from './components/StreakPopup';
 import { loadProgress, recordWord, saveWrongWords } from './utils/progress';
 import type { ProgressData } from './utils/progress';
 import { loadStreak, updateStreak } from './utils/streak';
 import type { StreakData } from './utils/streak';
+import { loadFavorites, toggleFavorite } from './utils/favorites';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 
 const levelBadgeEmoji: Record<Level, string> = {
@@ -48,6 +50,7 @@ function AppContent() {
   const [quizKey, setQuizKey] = useState(0);
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('podong_onboarded'));
+  const [favorites, setFavorites] = useState<string[]>(() => loadFavorites());
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('podong_onboarded', '1');
@@ -56,6 +59,8 @@ function AppContent() {
 
   const [streakData, setStreakData] = useState<StreakData>(() => loadStreak());
   const [showStreakPopup, setShowStreakPopup] = useState(false);
+
+  const handleToggleFavorite = (word: string) => setFavorites(toggleFavorite(word));
 
   const handleLevelSelect = (l: Level) => {
     setLevel(l);
@@ -86,12 +91,14 @@ function AppContent() {
   const activeNav =
     screen === 'level' ? 'home' :
     screen === 'progress' ? 'progress' :
+    screen === 'favorites' ? 'favorites' :
     'theme';
 
   const handleNavClick = (id: string) => {
     if (id === 'home') setScreen('level');
     if (id === 'theme' && screen !== 'level') setScreen('theme');
     if (id === 'progress') setScreen('progress');
+    if (id === 'favorites') setScreen('favorites');
   };
 
   const navLabel = (id: string) => {
@@ -147,7 +154,7 @@ function AppContent() {
 
         {/* Center: Level badge */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          {screen !== 'level' && screen !== 'progress' && (
+          {screen !== 'level' && screen !== 'progress' && screen !== 'favorites' && (
             <span style={{
               background: levelBadgeColor[level],
               borderRadius: 20,
@@ -260,6 +267,8 @@ function AppContent() {
                 }}
                 onBack={() => setScreen('theme')}
                 onWordViewed={handleWordViewed}
+                favorites={favorites}
+                onToggleFavorite={handleToggleFavorite}
               />
             )}
             {screen === 'quiz' && selectedTheme && (
@@ -268,7 +277,10 @@ function AppContent() {
                 theme={quizOverrideTheme ?? selectedTheme}
                 level={level}
                 onComplete={handleQuizComplete}
-                onBack={() => { setQuizOverrideTheme(null); setScreen('study'); }}
+                onBack={() => {
+                  setQuizOverrideTheme(null);
+                  setScreen(selectedTheme?.id === 'favorites' ? 'favorites' : 'study');
+                }}
               />
             )}
             {screen === 'result' && selectedTheme && (
@@ -291,11 +303,26 @@ function AppContent() {
                     setScreen('quiz');
                   }
                 }}
-                onGoTheme={() => { setQuizOverrideTheme(null); setScreen('theme'); }}
+                onGoTheme={() => {
+                  setQuizOverrideTheme(null);
+                  setScreen(selectedTheme?.id === 'favorites' ? 'favorites' : 'theme');
+                }}
               />
             )}
             {screen === 'progress' && (
               <Progress progress={progress} />
+            )}
+            {screen === 'favorites' && (
+              <Favorites
+                favorites={favorites}
+                onToggleFavorite={handleToggleFavorite}
+                onStartQuiz={(favTheme) => {
+                  setSelectedTheme(favTheme);
+                  setQuizOverrideTheme(null);
+                  setQuizKey((k) => k + 1);
+                  setScreen('quiz');
+                }}
+              />
             )}
 
           </div>
