@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Level, ThemeData, WordData } from '../data/types';
 import { useLanguage } from '../i18n/LanguageContext';
+import WordAnimation from './WordAnimation';
 
 interface Props {
   theme: ThemeData;
@@ -19,19 +20,6 @@ function getExample(word: WordData, level: Level): string {
   return word.exampleAdvanced;
 }
 
-const animClass: Record<string, string> = {
-  heartbeat: 'anim-heartbeat',
-  spin: 'anim-spin',
-  twinkle: 'anim-twinkle',
-  creep: 'anim-creep',
-  wobble: 'anim-wobble',
-  bounce: 'anim-bounce',
-  drip: 'anim-drip',
-  flash: 'anim-flash',
-  roll: 'anim-roll',
-  shake: 'anim-pulse',
-  pulse: 'anim-pulse',
-};
 
 function speakText(text: string) {
   window.speechSynthesis.cancel();
@@ -142,13 +130,9 @@ export default function WordCard({ theme, level, onStartQuiz, onBack, onWordView
         gap: 20,
         backdropFilter: 'blur(8px)',
       }}>
-        {/* Animated emoji */}
-        <div
-          className={animClass[word.animationType] ?? 'anim-pulse'}
-          style={{ fontSize: 72, lineHeight: 1, cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => speakText(word.word)}
-        >
-          {word.emoji}
+        {/* Word animation */}
+        <div style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => speakText(word.word)}>
+          <WordAnimation animationType={word.animationType} emoji={word.emoji} />
         </div>
 
         {/* Word */}
