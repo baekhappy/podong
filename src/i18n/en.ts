@@ -59,4 +59,7 @@ export const en = {
   favoritesHint: 'Tap ⭐ on any word card to add favorites',
   favoriteQuiz: 'Quiz with Favorites',
   removeFavorite: 'Remove from Favorites',
+  search: 'Search',
+  searchPlaceholder: 'Search words in Korean or English',
+  searchNoResult: 'No results found',
 };

@@ -7,6 +7,7 @@ import Quiz from './components/Quiz';
 import QuizResult from './components/QuizResult';
 import Progress from './components/Progress';
 import Favorites from './components/Favorites';
+import Search from './components/Search';
 import Onboarding from './components/Onboarding';
 import StreakPopup from './components/StreakPopup';
 import { loadProgress, recordWord, saveWrongWords } from './utils/progress';
@@ -51,6 +52,7 @@ function AppContent() {
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('podong_onboarded'));
   const [favorites, setFavorites] = useState<string[]>(() => loadFavorites());
+  const [showSearch, setShowSearch] = useState(false);
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('podong_onboarded', '1');
@@ -122,6 +124,13 @@ function AppContent() {
   return (
     <div className="app-layout">
 
+      {showSearch && (
+        <Search
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
+          onClose={() => setShowSearch(false)}
+        />
+      )}
       {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
       {showStreakPopup && (
         <StreakPopup streak={streakData.streak} onDismiss={() => setShowStreakPopup(false)} />
@@ -206,6 +215,22 @@ function AppContent() {
               {todayText}
             </span>
           )}
+          <button
+            onClick={() => setShowSearch(true)}
+            title={t.search}
+            style={{
+              background: 'rgba(255,255,255,0.6)',
+              border: 'none',
+              borderRadius: 14,
+              padding: '5px 9px',
+              fontSize: 20,
+              cursor: 'pointer',
+              lineHeight: 1,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}
+          >
+            🔍
+          </button>
           <button style={{
             background: 'linear-gradient(135deg, #B8D4FF, #B8F0E6)',
             border: 'none',

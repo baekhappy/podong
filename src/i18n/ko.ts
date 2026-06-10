@@ -59,4 +59,7 @@ export const ko = {
   favoritesHint: '단어 카드에서 ⭐ 버튼을 눌러 즐겨찾기하세요',
   favoriteQuiz: '즐겨찾기 단어로 퀴즈 시작',
   removeFavorite: '즐겨찾기 해제',
+  search: '검색',
+  searchPlaceholder: '단어를 검색해보세요',
+  searchNoResult: '검색 결과가 없어요',
 };
