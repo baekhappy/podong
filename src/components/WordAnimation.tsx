@@ -225,56 +225,56 @@ export default function WordAnimation({ animationType, emoji }: Props) {
     case 'sneak':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-sneak 3s ease-in-out infinite' }}>🐱</span>
+          <span className="wa-lg" style={{ animation: 'wa-sneak 3s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'wobble':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-wobble 1.2s ease-in-out infinite' }}>🐧</span>
+          <span className="wa-lg" style={{ animation: 'wa-wobble 1.2s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'bounce':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-bounce 0.85s ease-in-out infinite' }}>🐸</span>
+          <span className="wa-lg" style={{ animation: 'wa-bounce 0.85s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'crawl':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-crawl 4s ease-in-out infinite' }}>🐢</span>
+          <span className="wa-lg" style={{ animation: 'wa-crawl 4s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'spin':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-spin 1.5s linear infinite' }}>🔵</span>
+          <span className="wa-lg" style={{ animation: 'wa-spin 1.5s linear infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'nod':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-nod 1.2s ease-in-out infinite' }}>😊</span>
+          <span className="wa-lg" style={{ animation: 'wa-nod 1.2s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'shake':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-shake 1s ease-in-out infinite' }}>❓</span>
+          <span className="wa-lg" style={{ animation: 'wa-shake 1s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'float':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-float 2.5s ease-in-out infinite' }}>☁️</span>
+          <span className="wa-lg" style={{ animation: 'wa-float 2.5s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
@@ -323,21 +323,21 @@ export default function WordAnimation({ animationType, emoji }: Props) {
     case 'flash':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-flash 0.8s ease-in-out infinite' }}>⚡</span>
+          <span className="wa-lg" style={{ animation: 'wa-flash 0.8s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'roll':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-roll 2s linear infinite alternate' }}>🔵</span>
+          <span className="wa-lg" style={{ animation: 'wa-roll 2s linear infinite alternate' }}>{emoji}</span>
         </div>
       );
 
     case 'zigzag':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-zigzag 2s ease-in-out infinite' }}>➡️</span>
+          <span className="wa-lg" style={{ animation: 'wa-zigzag 2s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
@@ -353,7 +353,7 @@ export default function WordAnimation({ animationType, emoji }: Props) {
     case 'idle':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-idle 3s ease-in-out infinite' }}>🧍</span>
+          <span className="wa-lg" style={{ animation: 'wa-idle 3s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
@@ -382,28 +382,28 @@ export default function WordAnimation({ animationType, emoji }: Props) {
           <span
             className="wa-lg"
             style={{ animation: 'wa-bow 1.5s ease-in-out infinite', transformOrigin: 'top center' }}
-          >🙇</span>
+          >{emoji}</span>
         </div>
       );
 
     case 'hesitate':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-hesitate 2.5s ease-in-out infinite' }}>😅</span>
+          <span className="wa-lg" style={{ animation: 'wa-hesitate 2.5s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
     case 'careful':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-careful 5s ease-in-out infinite alternate' }}>👣</span>
+          <span className="wa-lg" style={{ animation: 'wa-careful 5s ease-in-out infinite alternate' }}>{emoji}</span>
         </div>
       );
 
     case 'slow':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-slow 7s linear infinite alternate' }}>🐌</span>
+          <span className="wa-lg" style={{ animation: 'wa-slow 7s linear infinite alternate' }}>{emoji}</span>
         </div>
       );
 
@@ -430,7 +430,7 @@ export default function WordAnimation({ animationType, emoji }: Props) {
     case 'sizzle':
       return (
         <div className="wa-box">
-          <span className="wa-lg" style={{ animation: 'wa-sizzle 0.5s ease-in-out infinite' }}>🔥</span>
+          <span className="wa-lg" style={{ animation: 'wa-sizzle 0.5s ease-in-out infinite' }}>{emoji}</span>
         </div>
       );
 
