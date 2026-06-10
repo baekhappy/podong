@@ -9,6 +9,7 @@ import 상태느낌Words from './상태느낌';
 import 소리충격Words from './소리충격';
 import 행동 from './행동';
 import 모양 from './모양';
+import 촉감 from './촉감';
 
 export const themes: ThemeData[] = [
   {
@@ -69,6 +70,7 @@ export const themes: ThemeData[] = [
   },
   행동,
   모양,
+  촉감,
 ];
 
 export type { ThemeData, WordData, Level, Screen } from './types';
