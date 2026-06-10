@@ -141,10 +141,9 @@ function AppContent() {
 
         {/* Left: Logo + Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
-          <span style={{ fontSize: 28 }}>🐡</span>
           <div>
             <div style={{
-              fontSize: 17, fontWeight: 900,
+              fontSize: 24, fontWeight: 900,
               color: 'var(--text-dark)',
               fontFamily: "'Jua', sans-serif",
               lineHeight: 1.1,
@@ -152,11 +151,11 @@ function AppContent() {
               포동포동
             </div>
             <div style={{
-              fontSize: 11, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               color: 'var(--text-soft)',
               letterSpacing: 1,
             }}>
-              Podong
+              Podong Podong
             </div>
           </div>
         </div>
